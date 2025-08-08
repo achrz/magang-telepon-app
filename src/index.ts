@@ -45,6 +45,16 @@ app.get('/list', async (c) => {
   }
 })
 
+app.get('/app-settings', async (c) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM app_settings')
+    return c.json(rows)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err.message)
+    return c.json({ error: 'DB query error' }, 500)
+  }
+})
+
 // Start server
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 console.log(`🚀 Server running on port ${port}`)
