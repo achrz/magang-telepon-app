@@ -7,8 +7,8 @@ services:
     ports:
       - "3085:3000"
     volumes:
-      - /www/apps/telepon-app/src:/app/src
+      - /www/apps/magang-telepon-app/src:/app/src
       - /app/node_modules     # anonymous volume untuk jaga node_modules tetap di container
     restart: unless-stopped
     env_file:
-      - /www/apps/telepon-app/.env
+      - /www/apps/magang-telepon-app/.env
