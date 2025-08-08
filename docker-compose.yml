@@ -1,0 +1,14 @@
+services:
+  telepon-app:
+    build:
+      context: .             # path ke Dockerfile
+      # platform: linux/arm64  # pastikan build untuk ARM64
+    container_name: api-telepon-app.appdmc.my.id
+    ports:
+      - "3085:3000"
+    volumes:
+      - /www/apps/telepon-app/src:/app/src
+      - /app/node_modules     # anonymous volume untuk jaga node_modules tetap di container
+    restart: unless-stopped
+    env_file:
+      - /www/apps/telepon-app/.env
