@@ -55,6 +55,37 @@ app.get('/app-settings', async (c) => {
   }
 })
 
+app.post('/add-phone', async (c) => {
+  try {
+    const body = await c.req.json()
+    const phone = body.phone
+    const name = body.name
+
+    if (!phone) {
+      return c.json({ error: 'phone is required' }, 400)
+    }
+
+    const checkQuery = 'SELECT * FROM list WHERE phone = ?'
+    const [check]: any = await pool.query(checkQuery, [phone])
+
+    if (check.length > 0) {
+      return c.json({
+        message: `Nomor telepon sudah ditambahkan sebelumnya`
+      }, 200)
+    }
+
+    const insertQuery = 'INSERT INTO list (phone, name) VALUES (?, ?)'
+    const [insert]: any = await pool.query(insertQuery, [phone, name])
+
+    return c.json({
+      message: `Nomor telepon berhasil ditambahkan, salam kenal ya!`,
+    }, 201)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err)
+    return c.json({ error: 'DB query error', details: err.message }, 500)
+  }
+})
+
 // Start server
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 console.log(`🚀 Server running on port ${port}`)
