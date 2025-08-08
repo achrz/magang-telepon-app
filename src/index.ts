@@ -33,6 +33,8 @@ async function testDBConnection() {
 }
 testDBConnection()
 
+app.get('/', (c) => c.text('ArthaFin API is running'))
+
 // Start server
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 console.log(`🚀 Server running on port ${port}`)
