@@ -35,7 +35,7 @@ testDBConnection()
 // Endpoint untuk mendapatkan data dari tabel 'users'
 app.get('/', (c) => c.text('Telepon APP API is running'))
 
-app.get('/list', async (c) => {
+app.get('/list-all', async (c) => {
   try {
     const [rows] = await pool.query('SELECT * FROM list')
     return c.json(rows)
@@ -142,6 +142,106 @@ app.post('/delete', async (c) => {
     return c.json({
       message: `Nomor telepon berhasil dihapus`,
     }, 200)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err)
+    return c.json({ error: 'DB query error', details: err.message }, 500)
+  }
+})
+
+app.post('/login', async (c) => {
+  try {
+    const body = await c.req.json()
+    const username = body.username
+    const password = body.password
+
+    if (!username) {
+      return c.json({ error: 'username is required' }, 400)
+    }
+    if (!password) {
+      return c.json({ error: 'password is required' }, 400)
+    }
+
+    const checkQuery = 'SELECT * FROM users WHERE username = ? AND password = ?'
+    const [check]: any = await pool.query(checkQuery, [username, password])
+
+    if (check.length === 0) {
+      return c.json({
+        message: `Username atau password salah`
+      }, 200)
+    }
+
+    return c.json({
+      message: `Login berhasil`,
+    }, 200)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err)
+    return c.json({ error: 'DB query error', details: err.message }, 500)
+  }
+})
+
+app.post('/list', async (c) => {
+  try {
+    const body = await c.req.json()
+    const id = body.id
+
+    if (!id) {
+      return c.json({ error: 'id is required' }, 400)
+    }
+
+    const checkQuery = 'SELECT * FROM list WHERE saved_by = ?'
+    const [check]: any = await pool.query(checkQuery, [id])
+
+    if (check.length === 0) {
+      return c.json({
+        message: `Tidak ada nomor tersimpan`
+      }, 200)
+    }
+
+    return c.json({
+      message: `List berhasil ditemukan`,
+    }, 200)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err)
+    return c.json({ error: 'DB query error', details: err.message }, 500)
+  }
+})
+
+app.post('/register', async (c) => {
+  try {
+    const body = await c.req.json()
+    const phone = body.phone
+    const name = body.name
+    const password = body.password
+    const username = body.username
+
+    if (!phone) {
+      return c.json({ error: 'phone is required' }, 400)
+    }
+    if (!name) {
+      return c.json({ error: 'name is required' }, 400)
+    }
+    if (!password) {
+      return c.json({ error: 'password is required' }, 400)
+    }
+    if (!username) {
+      return c.json({ error: 'username is required' }, 400)
+    }
+
+    const checkQuery = 'SELECT * FROM user WHERE username = ?'
+    const [check]: any = await pool.query(checkQuery, [username])
+
+    if (check.length > 0) {
+      return c.json({
+        message: `Username sudah digunakan`
+      }, 200)
+    }
+
+    const insertQuery = 'INSERT INTO user (username, password, name, phone) VALUES (?, ?, ?, ?)'
+    const [insert]: any = await pool.query(insertQuery, [username, password, name, phone])
+
+    return c.json({
+      message: `User berhasil terdaftar`,
+    }, 201)
   } catch (err: any) {
     console.error('❌ Query failed:', err)
     return c.json({ error: 'DB query error', details: err.message }, 500)
