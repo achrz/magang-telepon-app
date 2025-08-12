@@ -161,7 +161,7 @@ app.post('/login', async (c) => {
       return c.json({ error: 'password is required' }, 400)
     }
 
-    const checkQuery = 'SELECT * FROM users WHERE username = ? AND password = ?'
+    const checkQuery = 'SELECT * FROM user WHERE username = ? AND password = ?'
     const [check]: any = await pool.query(checkQuery, [username, password])
 
     if (check.length === 0) {
