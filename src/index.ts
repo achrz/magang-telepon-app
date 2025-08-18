@@ -172,6 +172,9 @@ app.post('/login', async (c) => {
 
     return c.json({
       message: `Login berhasil`,
+      username : check[0].username,
+      id: check[0].id,
+      phone: check[0].phone
     }, 200)
   } catch (err: any) {
     console.error('❌ Query failed:', err)
