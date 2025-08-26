@@ -60,6 +60,7 @@ app.post('/add-phone', async (c) => {
     const body = await c.req.json()
     const phone = body.phone
     const name = body.name
+    const idUser = body.idUser
 
     if (!phone) {
       return c.json({ error: 'phone is required' }, 400)
@@ -74,8 +75,8 @@ app.post('/add-phone', async (c) => {
       }, 200)
     }
 
-    const insertQuery = 'INSERT INTO list (phone, name) VALUES (?, ?)'
-    const [insert]: any = await pool.query(insertQuery, [phone, name])
+    const insertQuery = 'INSERT INTO list (phone, name, saved_by) VALUES (?, ?, ?)'
+    const [insert]: any = await pool.query(insertQuery, [phone, name, idUser])
 
     return c.json({
       message: `Nomor telepon berhasil ditambahkan, salam kenal ya!`,
@@ -182,17 +183,17 @@ app.post('/login', async (c) => {
   }
 })
 
-app.post('/list', async (c) => {
+app.post('/phone-saved-by', async (c) => {
   try {
     const body = await c.req.json()
-    const id = body.id
+    const idUser = body.idUser
 
-    if (!id) {
-      return c.json({ error: 'id is required' }, 400)
+    if (!idUser) {
+      return c.json({ error: 'idUser is required' }, 400)
     }
 
     const checkQuery = 'SELECT * FROM list WHERE saved_by = ?'
-    const [check]: any = await pool.query(checkQuery, [id])
+    const [check]: any = await pool.query(checkQuery, [idUser])
 
     if (check.length === 0) {
       return c.json({
