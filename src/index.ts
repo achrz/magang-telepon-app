@@ -200,10 +200,7 @@ app.post('/phone-saved-by', async (c) => {
         message: `Tidak ada nomor tersimpan`
       }, 200)
     }
-
-    return c.json({
-      message: `List berhasil ditemukan`,
-    }, 200)
+    return c.json(check, 200)
   } catch (err: any) {
     console.error('❌ Query failed:', err)
     return c.json({ error: 'DB query error', details: err.message }, 500)
