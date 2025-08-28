@@ -249,6 +249,38 @@ app.post('/register', async (c) => {
   }
 })
 
+app.post('/favourite', async (c) => {
+  try {
+    const body = await c.req.json()
+    const id = body.id
+    const is_favourite = body.is_favourite // 0 or 1
+
+    if (!id) {
+      return c.json({ error: 'id is required' }, 400)
+    }
+
+    const checkQuery = 'SELECT * FROM list WHERE id = ?'
+    const [check]: any = await pool.query(checkQuery, [id])
+
+    if (check.length === 0) {
+      return c.json({
+        message: `Nomor telepon dengan ID ${id} tidak ada`
+      }, 200)
+    }
+
+    const updateQuery = 'UPDATE list SET is_favourite = ? WHERE id = ?'
+    const [update]: any = await pool.query(updateQuery, [is_favourite, id])
+
+    return c.json({
+      status : 'success',
+      message: `Berhasil menambah favorit Nomor telepon dengan ID ${id}`,
+    }, 200)
+  } catch (err: any) {
+    console.error('❌ Query failed:', err)
+    return c.json({ error: 'DB query error', details: err.message }, 500)
+  }
+})
+
 // Start server
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 console.log(`🚀 Server running on port ${port}`)
