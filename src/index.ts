@@ -273,7 +273,7 @@ app.post('/favourite', async (c) => {
 
     return c.json({
       status : 'success',
-      message: `Berhasil menambah favorit Nomor telepon dengan ID ${id}`,
+      message: `Berhasil ${is_favourite === 1 ? 'menambah' : 'menghapus'} favorit Nomor telepon dengan ID ${id}`,
     }, 200)
   } catch (err: any) {
     console.error('❌ Query failed:', err)
