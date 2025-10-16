@@ -45,6 +45,29 @@ app.get('/list-all', async (c) => {
   }
 })
 
+app.get('/list-by-id/:id', async (c) => {
+  try {
+    const id = c.req.param('id')
+
+    // Validasi id (opsional tapi bagus untuk keamanan)
+    if (!id || isNaN(Number(id))) {
+      return c.json({ error: 'Invalid ID' }, 400)
+    }
+
+    const [rows] = await pool.query('SELECT * FROM list WHERE id = ?', [id])
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return c.json({ error: 'Data not found' }, 404)
+    }
+
+    return c.json(rows[0])
+  } catch (err: any) {
+    console.error('❌ Query failed:', err.message)
+    return c.json({ error: 'DB query error' }, 500)
+  }
+})
+
+
 app.get('/app-settings', async (c) => {
   try {
     const [rows] = await pool.query('SELECT * FROM app_settings')
@@ -173,7 +196,7 @@ app.post('/login', async (c) => {
 
     return c.json({
       message: `Login berhasil`,
-      username : check[0].username,
+      username: check[0].username,
       id: check[0].id,
       phone: check[0].phone
     }, 200)
@@ -272,7 +295,7 @@ app.post('/favourite', async (c) => {
     const [update]: any = await pool.query(updateQuery, [is_favourite, id])
 
     return c.json({
-      status : 'success',
+      status: 'success',
       message: `Berhasil ${is_favourite === 1 ? 'menambah' : 'menghapus'} favorit Nomor telepon dengan ID ${id}`,
     }, 200)
   } catch (err: any) {
